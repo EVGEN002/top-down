@@ -19,13 +19,36 @@ export const render = function() {
   ctx.fillStyle = "#FFFFFF";
   // ctx.fillRect(player.x, player.y, player.width, player.height);
   ctx.drawImage(playerSprite, spriteX, spriteY, 61, 99, player.x, player.y, 61, 99);
+}
 
-  function iddling() {
-    setTimeout(() => {
-      spriteX += 31;
-    }, 5000)
-  }
-  iddling()
+let iddling = false;
+let runUp = false;
+
+// Idling
+if (iddling === true) {
+  setInterval(() => {
+    function iddling() {
+      console.log(spriteX);
+      spriteX += 92;
+      if (spriteX === 1941) {
+        spriteX = 9;
+      }
+    }
+    iddling()
+  }, 180)
+}
+
+if (runUp === true) {
+  setInterval(() => {
+    function iddling() {
+      console.log(spriteX);
+      spriteX += 92;
+      if (spriteX === 1941) {
+        spriteX = 9;
+      }
+    }
+    iddling()
+  }, 180)
 }
 
 window.addEventListener("keydown", (event) => {
