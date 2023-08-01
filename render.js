@@ -1,28 +1,58 @@
 import { canvas, ctx, canvasHeight, canvasWidth } from "./cavnas";
 import { Entity } from "./Entity";
 
+// import movement from "./movement";
+// movement();
+
+const trees = [
+  [100, 100],
+  [150, 200],
+  [10, 200],
+  [250, 160]
+];
+
+const treeImg = document.createElement("img");
+treeImg.setAttribute("src", "./hr-tree-01-a-trunk.png");
+treeImg.style.display = "none";
+
+const leavesImg = document.createElement("img");
+leavesImg.setAttribute("src", "./hr-tree-01-a-leaves.png");
+leavesImg.style.display = "none";
+
 const player = new Entity(
   canvasWidth / 2,
   canvasHeight / 2,
   50,
   50,
   10,
-  "iddle"
+  "run"
 );
 
-let spriteX = 4;
-let spriteY = 7;
-let runUpX = 0;
-let runUpY = 0;
+let iddleX = 0;
+let iddleY = 0;
+let iddleShadowX = 0;
+let iddleShadowY = 0;
+let runX = 0;
+let runY = 0;
+let runShadowX = 0;
+let runShadowY = 0;
 let aInterval = 0;
 
 const iddleSpriteImg = document.createElement("img");
-iddleSpriteImg.setAttribute("src", "./level1_idle.png");
+iddleSpriteImg.setAttribute("src", "./hr-level1_idle.png");
 iddleSpriteImg.style.display = "none";
 
-const runUpSpriteImg = document.createElement("img");
-runUpSpriteImg.setAttribute("src", "level1_running.png");
-runUpSpriteImg.style.display = "none";
+const iddleShadowImg = document.createElement("img");
+iddleShadowImg.setAttribute("src", "./hr-level1_idle_shadow.png");
+iddleShadowImg.style.display = "none";
+
+const runShadowImg = document.createElement("img");
+runShadowImg.setAttribute("src", "./run-shadow.png");
+runShadowImg.style.display = "none";
+
+const runSpriteImg = document.createElement("img");
+runSpriteImg.setAttribute("src", "hr-level1_running.png");
+runSpriteImg.style.display = "none";
 
 const terrainImg = document.createElement("img");
 terrainImg.setAttribute("src", "./slice.png");
@@ -44,59 +74,96 @@ export const render = function () {
   ctx.strokeStyle = "#FFFFFF";
   ctx.strokeText(`iddle: ${player.animation}`, 50, 70);
 
+  ctx.strokeStyle = "#FFFFFF";
+  ctx.strokeText(`runY: ${runY}`, 50, 90);
+
+  ctx.strokeStyle = "#FFFFFF";
+  ctx.strokeText(`runX: ${runX}`, 50, 110);
+
+  trees.forEach(element => {
+    ctx.drawImage(treeImg, 0, 0, 140, 340, element[0], element[1], 140, 340);
+    ctx.drawImage(leavesImg, 0, 0, 184, 306, element[0] - 25, element[1] - 25, 184, 306);
+  });
+
+
   if (player.animation === "iddle") {
+    ctx.globalAlpha = 0.4;
+    ctx.drawImage(
+      iddleShadowImg,
+      iddleShadowX,
+      iddleShadowY,
+      164,
+      78,
+      player.x + 25,
+      player.y + 62,
+      164,
+      78
+    );
+    ctx.globalAlpha = 1;
     ctx.drawImage(
       iddleSpriteImg,
-      spriteX,
-      spriteY,
-      31,
-      50,
+      iddleX,
+      iddleY,
+      92,
+      116,
       player.x,
       player.y,
-      31,
-      50
+      92,
+      116
     );
-  } else if (player.animation === "runUp") {
+  } else if (player.animation === "run") {
+    ctx.globalAlpha = 0.4;
     ctx.drawImage(
-      runUpSpriteImg,
-      runUpX,
-      runUpY,
-      45,
-      62,
+      runShadowImg,
+      runShadowX,
+      runShadowY,
+      190,
+      68,
+      player.x + 10,
+      player.y + 62,
+      190,
+      68
+    );
+    ctx.globalAlpha = 1;
+    ctx.drawImage(
+      runSpriteImg,
+      runX,
+      runY,
+      88,
+      132,
       player.x,
       player.y,
-      45,
-      62
+      88,
+      132
     );
   }
 };
 
 setInterval(() => {
   if (player.animation === "iddle") {
-    spriteX += 46;
-    if (spriteX === 970) {
-      spriteX = 4;
+    iddleX += 92;
+    if (iddleX === 2024) {
+      iddleX = 0;
+    }
+    iddleShadowX += 164;
+    if (iddleShadowX === 3608) {
+      iddleShadowX = 0;
     }
   }
 }, 150);
 
 setInterval(() => {
-  if (player.animation === "runUp") {
-    runUpX += 44;
-    if (runUpX === 924) {
-      runUpX = 0;
+  if (player.animation === "run") {
+    runX += 88;
+    if (runX === 1936) {
+      runX = 0;
+    }
+    runShadowX += 190;
+    if (runShadowX === 4180) {
+      runShadowX = 0;
     }
   }
 }, 30);
-
-// setInterval(() => {
-//   if (player.animation === "runDown") {
-//     runUpX += 44;
-//     if (runUpX === 924) {
-//       runUpX = 0;
-//     }
-//   }
-// }, 30);
 
 let pressed = new Set();
 
@@ -106,46 +173,54 @@ window.addEventListener("keydown", (event) => {
     aInterval = setInterval(() => {
       switch (true) {
         case (pressed.has("ArrowUp") && pressed.has("ArrowLeft")):
-          player.animation = "runUp";
-          runUpY = 462;
+          player.animation = "run";
+          runY = 924;
+          runShadowY = 68;
           player.y -= player.speed / 1.5;
           player.x -= player.speed / 1.5;
           break;
         case (pressed.has("ArrowUp") && pressed.has("ArrowRight")):
-          player.animation = "runUp";
-          runUpY = 65;
+          player.animation = "run";
+          runY = 132;
           player.y -= player.speed / 1.5;
           player.x += player.speed / 1.5;
           break;
         case (pressed.has("ArrowDown") && pressed.has("ArrowRight")):
-          player.animation = "runUp";
-          runUpY = 201;
+          player.animation = "run";
+          runY = 396;
+          runShadowY = 204;
           player.y += player.speed / 1.5;
           player.x += player.speed / 1.5;
           break;
         case (pressed.has("ArrowDown") && pressed.has("ArrowLeft")):
-          player.animation = "runUp";
-          runUpY = 331;
+          player.animation = "run";
+          runY = 660;
+          runShadowY = 340;
           player.y += player.speed / 1.5;
           player.x -= player.speed / 1.5;
           break;
         case (pressed.has("ArrowUp")):
-          player.animation = "runUp";
+          player.animation = "run";
           player.y -= player.speed;
+          runY = 0;
+          runShadowY = 0;
           break;
           case (pressed.has("ArrowLeft")):
-          player.animation = "runUp";
-          runUpY = 397;
+          player.animation = "run";
+          runY = 792;
+          runShadowY = 406;
           player.x -= player.speed;
           break;
         case (pressed.has("ArrowRight")):
-          player.animation = "runUp";
-          runUpY = 130;
+          player.animation = "run";
+          runY = 264;
+          runShadowY = 136;
           player.x += player.speed;
           break;
         case (pressed.has("ArrowDown")):
-          player.animation = "runUp";
-          runUpY = 266;
+          player.animation = "run";
+          runY = 528;
+          runShadowY = 272;
           player.y += player.speed;
           break;
       }
@@ -158,74 +233,31 @@ window.addEventListener("keyup", (event) => {
     case "ArrowUp":
       pressed.delete("ArrowUp");
       player.animation = "iddle";
-      spriteY = 7;
+      iddleY = 0;
+      iddleShadowY = 0;
       break;
     case "ArrowDown":
       pressed.delete("ArrowDown");
       player.animation = "iddle";
-      runUpY = 0;
-      spriteY = 232;
+      runY = 0;
+      iddleY = 464;
+      iddleShadowY = 312;
       break;
     case "ArrowLeft":
       pressed.delete("ArrowLeft");
       player.animation = "iddle";
-      runUpY = 0;
-      spriteY = 349;
+      runY = 0;
+      iddleY = 696;
+      iddleShadowY = 468;
       break;
     case "ArrowRight":
       player.animation = "iddle";
-      runUpY = 0;
-      spriteY = 117;
+      runY = 0;
+      iddleY = 232;
+      iddleShadowY = 156;
       pressed.delete("ArrowRight");
       break;
     default:
       pressed.clear();
   }
 });
-
-// window.addEventListener("keydown", (event) => {
-//   if (event.key === "ArrowUp") {
-//     if (!aInterval) {
-//       aInterval = setInterval(function() {
-//         if (player.y > 0) {
-//           player.y -= player.speed;
-//           player.animation = "run";
-//         }
-//       }, 30);
-//     }
-//   }
-// });
-
-// window.addEventListener("keyup", (event) => {
-//   if (aInterval) {
-//     clearInterval(aInterval);
-//     aInterval = 0;
-//     player.animation = "iddle";
-//   }
-// })
-
-// window.addEventListener("keydown", (event) => {
-//   if (event.key === "ArrowDown") {
-//     if (player.y < canvasHeight) {
-//       player.y += player.speed;
-//     }
-//   }
-// });
-
-// window.addEventListener("keydown", (event) => {
-//   if (event.key === "ArrowLeft") {
-//     if (player.x > 0) {
-//       player.x -= player.speed;
-//     }
-//   }
-// });
-
-// window.addEventListener("keydown", (event) => {
-//   if (event.key === "ArrowRight") {
-//     if (player.x < canvasWidth) {
-//       player.x += player.speed;
-//     }
-//   }
-// });
-
-// startAnimation();
