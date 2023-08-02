@@ -1,8 +1,9 @@
 import { canvas, ctx, canvasHeight, canvasWidth } from "./cavnas";
 import { Entity } from "./Entity";
+import { Tree } from "./Tree";
 
-// import movement from "./movement";
-// movement();
+const trunk = new Tree(300, 300, 50, 50, "./hr-tree-01-a-trunk.png");
+trunk.mount();
 
 const trees = [
   [100, 100],
@@ -25,7 +26,7 @@ const player = new Entity(
   50,
   50,
   10,
-  "run"
+  "iddle"
 );
 
 let iddleX = 0;
@@ -80,11 +81,12 @@ export const render = function () {
   ctx.strokeStyle = "#FFFFFF";
   ctx.strokeText(`runX: ${runX}`, 50, 110);
 
-  trees.forEach(element => {
-    ctx.drawImage(treeImg, 0, 0, 140, 340, element[0], element[1], 140, 340);
-    ctx.drawImage(leavesImg, 0, 0, 184, 306, element[0] - 25, element[1] - 25, 184, 306);
-  });
-
+  // trees.forEach(element => {
+  //   ctx.drawImage(treeImg, 0, 0, 140, 340, element[0], element[1], 140, 340);
+  //   ctx.drawImage(leavesImg, 0, 0, 184, 306, element[0] - 25, element[1] - 25, 184, 306);
+  // });
+  trunk.renderFirstLayer(300, 300);
+  trunk.renderFirstLayer(400, 400);
 
   if (player.animation === "iddle") {
     ctx.globalAlpha = 0.4;
@@ -137,6 +139,11 @@ export const render = function () {
       132
     );
   }
+  ctx.strokeStyle = "#00ff44";
+  ctx.strokeRect(player.x + 15, player.y, 60, 120);
+
+  trunk.renderSecondLayer(300, 300);
+  trunk.renderSecondLayer(400, 400);
 };
 
 setInterval(() => {
