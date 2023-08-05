@@ -1,6 +1,7 @@
 import { canvas, ctx, canvasHeight, canvasWidth } from "./canvas";
 import { Character } from "./Character";
 import { Tree } from "./Tree";
+import { terminal } from "./terminal";
 
 const trunk = new Tree(300, 300, 50, 50, "./hr-tree-01-a-trunk.png");
 trunk.mount();
@@ -43,18 +44,6 @@ export const render = function () {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  ctx.strokeStyle = "#FFFFFF";
-  ctx.strokeText(`player y: ${player.y}`, 50, 50);
-
-  ctx.strokeStyle = "#FFFFFF";
-  ctx.strokeText(`iddle: ${player.animation}`, 50, 70);
-
-  ctx.strokeStyle = "#FFFFFF";
-  ctx.strokeText(`runY: ${player.runY}`, 50, 90);
-
-  ctx.strokeStyle = "#FFFFFF";
-  ctx.strokeText(`runX: ${player.runX}`, 50, 110);
-
   // trees.forEach(element => {
   //   ctx.drawImage(treeImg, 0, 0, 140, 340, element[0], element[1], 140, 340);
   //   ctx.drawImage(leavesImg, 0, 0, 184, 306, element[0] - 25, element[1] - 25, 184, 306);
@@ -68,6 +57,8 @@ export const render = function () {
 
   trunk.renderSecondLayer(300, 300);
   trunk.renderSecondLayer(400, 400);
+
+  terminal(ctx);
 };
 
 setInterval(() => {
@@ -107,15 +98,18 @@ window.addEventListener("keydown", (event) => {
           player.animation = "run";
           player.runY = 924;
           player.runShadowY = 68;
-          if (player.y )
-          player.y -= player.speed / 1.5;
-          player.x -= player.speed / 1.5;
+          if (player.yCollision > trunk.yCollision + trunk.heightCollision) {
+            player.y -= player.speed / 1.5;
+            player.x -= player.speed / 1.5;
+          }
           break;
         case (pressed.has("ArrowUp") && pressed.has("ArrowRight")):
           player.animation = "run";
           player.runY = 132;
-          player.y -= player.speed / 1.5;
-          player.x += player.speed / 1.5;
+          if (player.yCollision > trunk.yCollision + trunk.heightCollision) {
+            player.y -= player.speed / 1.5;
+            player.x += player.speed / 1.5;
+          }
           break;
         case (pressed.has("ArrowDown") && pressed.has("ArrowRight")):
           player.animation = "run";
@@ -133,11 +127,13 @@ window.addEventListener("keydown", (event) => {
           break;
         case (pressed.has("ArrowUp")):
           player.animation = "run";
-          player.y -= player.speed;
+          if (player.yCollision > trunk.yCollision + trunk.heightCollision || player.xCollision > trunk.xCollision + 50) {
+            player.y -= player.speed;
+          }
           player.runY = 0;
           player.runShadowY = 0;
           break;
-          case (pressed.has("ArrowLeft")):
+        case (pressed.has("ArrowLeft")):
           player.animation = "run";
           player.runY = 792;
           player.runShadowY = 406;

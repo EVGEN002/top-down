@@ -118,6 +118,11 @@ export class Character {
         break;
     }
     ctx.strokeStyle = "#00FF44";
-    ctx.strokeRect(this.x + 21, this.y + 30, 50, 85);
+    this.yCollision = this.y + 30;
+    this.xCollision = this.x + 21;
+    this.widthCollision = 50;
+    this.heightCollision = 85;
+    ctx.strokeRect(this.xCollision, this.yCollision, this.widthCollision, this.heightCollision);
+    ctx.strokeText(`x: ${this.xCollision} y: ${this.yCollision}`, this.xCollision - 100, this.yCollision + 120);
   }
 }

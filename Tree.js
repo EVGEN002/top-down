@@ -23,8 +23,13 @@ export class Tree {
 
   renderFirstLayer(x, y) {
     ctx.drawImage(this.#trunkImage, 0, 270, 140, 340, x, y + 240, 140, 340);
+    this.xCollision = x + 40;
+    this.yCollision = y + 245;
+    this.widthCollision = this.width;
+    this.heightCollision = this.height;
     ctx.strokeStyle = "#00ff44";
     ctx.strokeRect(x + 40, y + 245, this.width, this.height);
+    ctx.strokeText(`x: ${this.xCollision} y: ${this.yCollision}`, this.xCollision - 100, this.yCollision + 80);
   }
 
   renderSecondLayer(x, y) {
