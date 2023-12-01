@@ -1,9 +1,14 @@
 import { ctx, canvasHeight, canvasWidth } from "./canvas";
 import { Character } from "./Character";
 import { Tree } from "./Tree";
-import { terminal } from "./terminal";
 
-const trunk = new Tree(300, 300, 50, 50, "./assets/tree/hr-tree-01-a-trunk.png");
+const trunk = new Tree(
+  300,
+  300,
+  50,
+  50,
+  "./assets/tree/hr-tree-01-a-trunk.png"
+);
 trunk.mount();
 
 const treeImg = document.createElement("img");
@@ -19,7 +24,7 @@ const player = new Character(
   canvasHeight / 2,
   50,
   50,
-  10,
+  4,
   "iddle",
   "./assets/character/hr-level1_idle.png",
   "./assets/character/hr-level1_idle_shadow.png",
@@ -28,14 +33,55 @@ const player = new Character(
 );
 player.mount();
 
-let aInterval = 0;
-
 const terrainImg = document.createElement("img");
 terrainImg.setAttribute("src", "./assets/terrain/slice.png");
 terrainImg.style.display = "none";
 
+let rightPressed = false;
+let leftPressed = false;
+let upPressed = false;
+let downPressed = false;
+
 export const render = function () {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  if (rightPressed) {
+    player.animation = "run";
+    player.runY = 264;
+    player.runShadowY = 136;
+    player.x += player.speed;
+  } else if (leftPressed) {
+    player.animation = "run";
+    player.runY = 792;
+    player.runShadowY = 406;
+    player.x -= player.speed;
+  }
+  if (downPressed) {
+    player.animation = "run";
+    player.runY = 528;
+    player.runShadowY = 272;
+    player.y += player.speed;
+  } else if (upPressed) {
+    player.animation = "run";
+    player.runY = 0;
+    player.runShadowY = 0;
+    player.y -= player.speed;
+  }
+  if (rightPressed && downPressed) {
+    player.runY = 396;
+    player.runShadowY = 204;
+  }
+  if (leftPressed && downPressed) {
+    player.runY = 660;
+    player.runShadowY = 340;
+  }
+  if (rightPressed && upPressed) {
+    player.runY = 132;
+  }
+  if (leftPressed && upPressed) {
+    player.runY = 924;
+    player.runShadowY = 68;
+  }
 
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -52,7 +98,10 @@ export const render = function () {
   trunk.renderSecondLayer(300, 300);
   trunk.renderSecondLayer(400, 400);
 
-  terminal(ctx);
+  ctx.font = "16px monospace";
+  ctx.strokeStyle = "#FFFFFF";
+  ctx.strokeText(`${player.animation}`, 20, 36);
+  // terminal(ctx);
 };
 
 setInterval(() => {
@@ -79,96 +128,41 @@ setInterval(() => {
       player.runShadowX = 0;
     }
   }
-}, 30);
+}, 20);
 
-let pressed = new Set();
-
-window.addEventListener("keydown", (event) => {
-  pressed.add(event.key);
-  if (!aInterval) {
-    aInterval = setInterval(() => {
-      switch (true) {
-        case (pressed.has("ArrowUp") && pressed.has("ArrowLeft")):
-          player.animation = "run";
-          player.runY = 924;
-          player.runShadowY = 68;
-          break;
-        case (pressed.has("ArrowUp") && pressed.has("ArrowRight")):
-          player.animation = "run";
-          player.runY = 132;
-          break;
-        case (pressed.has("ArrowDown") && pressed.has("ArrowRight")):
-          player.animation = "run";
-          player.runY = 396;
-          player.runShadowY = 204;
-          player.y += player.speed / 1.5;
-          player.x += player.speed / 1.5;
-          break;
-        case (pressed.has("ArrowDown") && pressed.has("ArrowLeft")):
-          player.animation = "run";
-          player.runY = 660;
-          player.runShadowY = 340;
-          player.y += player.speed / 1.5;
-          player.x -= player.speed / 1.5;
-          break;
-        case (pressed.has("ArrowUp")):
-          player.animation = "run";
-          player.runY = 0;
-          player.runShadowY = 0;
-          break;
-        case (pressed.has("ArrowLeft")):
-          player.animation = "run";
-          player.runY = 792;
-          player.runShadowY = 406;
-          player.x -= player.speed;
-          break;
-        case (pressed.has("ArrowRight")):
-          player.animation = "run";
-          player.runY = 264;
-          player.runShadowY = 136;
-          player.x += player.speed;
-          break;
-        case (pressed.has("ArrowDown")):
-          player.animation = "run";
-          player.runY = 528;
-          player.runShadowY = 272;
-          player.y += player.speed;
-          break;
-      }
-    }, 30);
+function keyUpHandler(event) {
+  if (event.keyCode === 39) {
+    rightPressed = false;
+    player.animation = "iddle";
+  } else if (event.keyCode === 37) {
+    leftPressed = false;
+    player.animation = "iddle";
   }
-});
-
-window.addEventListener("keyup", (event) => {
-  switch (event.key) {
-    case "ArrowUp":
-      pressed.delete("ArrowUp");
-      player.animation = "iddle";
-      player.iddleY = 0;
-      player.iddleShadowY = 0;
-      break;
-    case "ArrowDown":
-      pressed.delete("ArrowDown");
-      player.animation = "iddle";
-      player.runY = 0;
-      player.iddleY = 464;
-      player.iddleShadowY = 312;
-      break;
-    case "ArrowLeft":
-      pressed.delete("ArrowLeft");
-      player.animation = "iddle";
-      player.runY = 0;
-      player.iddleY = 696;
-      player.iddleShadowY = 468;
-      break;
-    case "ArrowRight":
-      player.animation = "iddle";
-      player.runY = 0;
-      player.iddleY = 232;
-      player.iddleShadowY = 156;
-      pressed.delete("ArrowRight");
-      break;
-    default:
-      pressed.clear();
+  if (event.keyCode === 40) {
+    downPressed = false;
+    player.iddleY = 464;
+    player.runShadowY = 312;
+    player.animation = "iddle";
+  } else if (event.keyCode === 38) {
+    player.iddleY = 0;
+    player.runShadowY = 0;
+    upPressed = false;
+    player.animation = "iddle";
   }
-});
+}
+
+function keyDownHandler(event) {
+  if (event.keyCode === 39) {
+    rightPressed = true;
+  } else if (event.keyCode === 37) {
+    leftPressed = true;
+  }
+  if (event.keyCode === 40) {
+    downPressed = true;
+  } else if (event.keyCode === 38) {
+    upPressed = true;
+  }
+}
+
+document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("keydown", keyDownHandler, false);
