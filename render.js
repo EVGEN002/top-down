@@ -1,17 +1,17 @@
-import { canvas, ctx, canvasHeight, canvasWidth } from "./canvas";
+import { ctx, canvasHeight, canvasWidth } from "./canvas";
 import { Character } from "./Character";
 import { Tree } from "./Tree";
 import { terminal } from "./terminal";
 
-const trunk = new Tree(300, 300, 50, 50, "./hr-tree-01-a-trunk.png");
+const trunk = new Tree(300, 300, 50, 50, "./assets/tree/hr-tree-01-a-trunk.png");
 trunk.mount();
 
 const treeImg = document.createElement("img");
-treeImg.setAttribute("src", "./hr-tree-01-a-trunk.png");
+treeImg.setAttribute("src", "./assets/tree/hr-tree-01-a-trunk.png");
 treeImg.style.display = "none";
 
 const leavesImg = document.createElement("img");
-leavesImg.setAttribute("src", "./hr-tree-01-a-leaves.png");
+leavesImg.setAttribute("src", "./assets/tree/hr-tree-01-a-leaves.png");
 leavesImg.style.display = "none";
 
 const player = new Character(
@@ -21,17 +21,17 @@ const player = new Character(
   50,
   10,
   "iddle",
-  "./hr-level1_idle.png",
-  "./hr-level1_idle_shadow.png",
-  "./hr-level1_running.png",
-  "./run-shadow.png"
+  "./assets/character/hr-level1_idle.png",
+  "./assets/character/hr-level1_idle_shadow.png",
+  "./assets/character/hr-level1_running.png",
+  "./assets/character/run-shadow.png"
 );
 player.mount();
 
 let aInterval = 0;
 
 const terrainImg = document.createElement("img");
-terrainImg.setAttribute("src", "./slice.png");
+terrainImg.setAttribute("src", "./assets/terrain/slice.png");
 terrainImg.style.display = "none";
 
 export const render = function () {
@@ -44,16 +44,10 @@ export const render = function () {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-  // trees.forEach(element => {
-  //   ctx.drawImage(treeImg, 0, 0, 140, 340, element[0], element[1], 140, 340);
-  //   ctx.drawImage(leavesImg, 0, 0, 184, 306, element[0] - 25, element[1] - 25, 184, 306);
-  // });
   trunk.renderFirstLayer(300, 300);
   trunk.renderFirstLayer(400, 400);
 
   player.render();
-  // ctx.strokeStyle = "#00ff44";
-  // ctx.strokeRect(player.x + 15, player.y, 60, 120);
 
   trunk.renderSecondLayer(300, 300);
   trunk.renderSecondLayer(400, 400);
@@ -98,18 +92,10 @@ window.addEventListener("keydown", (event) => {
           player.animation = "run";
           player.runY = 924;
           player.runShadowY = 68;
-          if (player.yCollision > trunk.yCollision + trunk.heightCollision) {
-            player.y -= player.speed / 1.5;
-            player.x -= player.speed / 1.5;
-          }
           break;
         case (pressed.has("ArrowUp") && pressed.has("ArrowRight")):
           player.animation = "run";
           player.runY = 132;
-          if (player.yCollision > trunk.yCollision + trunk.heightCollision) {
-            player.y -= player.speed / 1.5;
-            player.x += player.speed / 1.5;
-          }
           break;
         case (pressed.has("ArrowDown") && pressed.has("ArrowRight")):
           player.animation = "run";
@@ -127,9 +113,6 @@ window.addEventListener("keydown", (event) => {
           break;
         case (pressed.has("ArrowUp")):
           player.animation = "run";
-          if (player.yCollision > trunk.yCollision + trunk.heightCollision || player.xCollision > trunk.xCollision + 50) {
-            player.y -= player.speed;
-          }
           player.runY = 0;
           player.runShadowY = 0;
           break;
